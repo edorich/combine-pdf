@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Electron Build outputs
+dist/
+build/
+
+# Tauri & Rust Build outputs
+src-tauri/target/
+src-tauri/gen/
+target/
+
+# Environment and IDE files
+.env
+.env.local
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Operating System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Temporary logs & test artifacts
+*.log
+
+input/

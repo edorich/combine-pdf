@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Combiner Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Load PDF.js from cdnjs for visual page rendering inside browser -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script>
+    // Point PDF.js to standard worker script on CDN
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+  </script>
+  <!-- Load PDF-Lib for fast client-side PDF modification & image embedding -->
+  <script src="pdf-lib.min.js"></script>
+</head>
+<body>
+  <!-- Window title bar for Mac styling -->
+  <div class="title-bar">
+    <div class="title-bar-text">PDF Combiner Pro</div>
+  </div>
+
+  <div class="app-container-wrapper">
+    <!-- Premium Top Tab Navigation -->
+    <div class="tab-navigation">
+      <button class="tab-btn active" id="tab-btn-combine" data-tab="combine-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="3" x2="9" y2="21"></line>
+        </svg>
+        Batch Combine PDFs
+      </button>
+      <button class="tab-btn" id="tab-btn-organize" data-tab="organize-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <rect x="3" y="13" width="18" height="4" rx="1"></rect>
+        </svg>
+        Page Organizer
+      </button>
+      <button class="tab-btn" id="tab-btn-embed" data-tab="embed-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+        PDF Embedded (Auto Regex)
+      </button>
+      <button class="tab-btn" id="tab-btn-free-embed" data-tab="free-embed-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        Free Embed Position (Multi Image)
+      </button>
+    </div>
+
+    <!-- TAB 1: BATCH COMBINE -->
+    <div class="tab-content active" id="combine-tab">
+      <div class="app-container">
+        <!-- Left Panel: Dropzone & Upload Actions -->
+        <div class="left-panel">
+          <div class="brand">
+            <div class="logo-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="8" fill="url(#paint0_linear)"/>
+                <path d="M10 22V10C10 8.89543 10.8954 8 12 8H18L22 12V22C22 23.1046 21.1046 24 20 24H12C10.8954 24 10 23.1046 10 22Z" fill="white" fill-opacity="0.2"/>
+                <path d="M14 13.5H18M14 16.5H18M14 19.5H16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M18 8V12H22" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <defs>
+                  <linearGradient id="paint0_linear" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#818cf8"/>
+                    <stop offset="1" stop-color="#c084fc"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <h1>PDF Combiner</h1>
+              <p>Merge documents seamlessly</p>
+            </div>
+          </div>
+
+          <!-- Drag & Drop Zone -->
+          <div class="drop-zone" id="drop-zone">
+            <div class="drop-zone-content">
+              <div class="drop-icon">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 28V46C12 49.3137 14.6863 52 18 52H46C49.3137 52 52 49.3137 52 46V28" stroke="url(#gradient-stroke)" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M32 12V36M32 12L22 22M32 12L42 22" stroke="url(#gradient-stroke)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <defs>
+                    <linearGradient id="gradient-stroke" x1="12" y1="12" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#818cf8"/>
+                      <stop offset="1" stop-color="#c084fc"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <h3>Drag & Drop PDF Files Here</h3>
+              <p>or click browse buttons below to import</p>
+            </div>
+          </div>
+
+          <!-- Upload Action Buttons -->
+          <div class="action-buttons">
+            <button type="button" id="btn-browse-files" class="btn btn-primary btn-full">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+              </svg>
+              Browse Files
+            </button>
+            <button type="button" id="btn-browse-folder" class="btn btn-secondary btn-full">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                <line x1="12" y1="11" x2="12" y2="17"></line>
+                <line x1="9" y1="14" x2="15" y2="14"></line>
+              </svg>
+              Browse Folder
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Panel: Document Queue & Settings -->
+        <div class="right-panel">
+          <div class="panel-header">
+            <h2>Document Queue</h2>
+            <div class="queue-meta">
+              <span id="queue-count" class="badge">0 files</span>
+              <button type="button" id="btn-clear-queue" class="btn-text" style="display: none;">Clear Queue</button>
+            </div>
+          </div>
+
+          <!-- Queue List Container -->
+          <div class="queue-container">
+            <!-- Empty state -->
+            <div class="empty-state" id="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <p>No documents added yet. Select files to start.</p>
+            </div>
+
+            <!-- Dynamic File Items List -->
+            <ul id="file-list" class="file-list">
+              <!-- Dynamically populated file cards -->
+            </ul>
+          </div>
+
+          <!-- Controls & Combine Button -->
+          <div class="control-panel">
+            <div class="form-group">
+              <label for="output-path">Destination File Path</label>
+              <div class="input-group">
+                <input type="text" id="output-path" placeholder="Select output location and filename..." readonly>
+                <button type="button" id="btn-browse-output" class="btn-icon" title="Choose Save Location">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="button" id="btn-combine" class="btn btn-action btn-disabled" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 16 12 12 8 16"></polyline>
+                <line x1="12" y1="12" x2="12" y2="21"></line>
+                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                <polyline points="16 16 12 12 8 16"></polyline>
+              </svg>
+              Combine PDF Documents
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PAGE ORGANIZER (COMBINE, ROTATE, DELETE, SPLIT) -->
+    <div class="tab-content" id="organize-tab" style="display: none;">
+      <div class="app-container">
+        <!-- Left Panel: Document Picker, Config, Action -->
+        <div class="left-panel">
+          <div class="brand">
+            <div class="logo-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="8" fill="url(#paint0_linear_org)"/>
+                <path d="M10 22V10C10 8.89543 10.8954 8 12 8H18L22 12V22C22 23.1046 21.1046 24 20 24H12C10.8954 24 10 23.1046 10 22Z" fill="white" fill-opacity="0.2"/>
+                <path d="M14 13.5H18M14 16.5H18M14 19.5H16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M18 8V12H22" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                <defs>
+                  <linearGradient id="paint0_linear_org" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#818cf8"/>
+                    <stop offset="1" stop-color="#c084fc"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <h1>Page Organizer</h1>
+              <p>Combine, reorder, rotate & split PDF pages</p>
+            </div>
+          </div>
+
+          <!-- Step 1: Add Source PDFs -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">1</span>
+              <h3>Add PDF Documents</h3>
+            </div>
+            <div class="file-selector-box" id="org-pdf-selector">
+              <button type="button" id="btn-org-add-pdf" class="btn btn-primary btn-full">
+                + Add PDF Document
+              </button>
+            </div>
+            <!-- Container for Loaded Source File Badges -->
+            <div id="org-source-files-list" class="org-source-files-list" style="margin-top: 10px;"></div>
+          </div>
+
+          <!-- Step 2: Set Save Folder & Filename -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">2</span>
+              <h3>Destination Folder & Filename</h3>
+            </div>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label for="org-out-filename" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Output File Name</label>
+              <input type="text" id="org-out-filename" placeholder="e.g. combined_document" value="combined_document" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--border-radius-md); width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="form-group">
+              <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Destination Folder</label>
+              <div class="input-group">
+                <input type="text" id="org-out-dir" placeholder="Choose destination folder..." readonly>
+                <button type="button" id="btn-org-browse-dir" class="btn-icon" title="Choose Save Directory">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Instructions Card -->
+          <div class="scanner-help-card" style="margin-top: 10px;">
+            <p><strong>Page Editor Instructions:</strong></p>
+            <p>➕ <strong>Add PDFs:</strong> Add multiple PDFs into workspace to combine them.</p>
+            <p>🖐️ <strong>Drag & Drop:</strong> Hold & drag any page card anywhere to combine & reorder pages across documents.</p>
+            <p>🔄 <strong>Rotate:</strong> Spin page 90° clockwise/counter-clockwise.</p>
+            <p>🗑️ <strong>Delete:</strong> Remove page from output.</p>
+            <p>✂️ <strong>Split:</strong> Insert cut boundary between pages to export separate files.</p>
+          </div>
+
+          <!-- Action Apply Button -->
+          <button type="button" id="btn-org-apply" class="btn btn-action btn-disabled" disabled style="margin-top: auto;">
+            Apply & Export PDF(s)
+          </button>
+        </div>
+
+        <!-- Right Panel: Visual Organizer Workspace -->
+        <div class="right-panel">
+          <div class="panel-header">
+            <h2>Workspace Grid</h2>
+            <div class="queue-meta">
+              <span id="org-active-pages" class="badge">0 pages active</span>
+              <button type="button" id="btn-org-rotate-all-cw" class="btn-text" style="display: none;" title="Rotate All 90° CW">↻ Rotate All</button>
+              <button type="button" id="btn-org-reset" class="btn-text" style="display: none;">Clear All</button>
+            </div>
+          </div>
+
+          <!-- Grid Workspace Container -->
+          <div class="queue-container" id="org-workspace-container">
+            <!-- Empty state -->
+            <div class="empty-state" id="org-empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+              </svg>
+              <p>No document added. Click "+ Add PDF Document" in Step 1 to combine & arrange pages.</p>
+            </div>
+
+            <!-- Page cards layout -->
+            <div class="org-pages-grid" id="org-pages-grid">
+              <!-- Dynamically populated page thumbnails -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: PDF EMBEDDED (CAP & TANDA TANGAN) -->
+    <div class="tab-content" id="embed-tab" style="display: none;">
+      <div class="app-container">
+        <!-- Left Panel: File Selectors, Presets, Controls -->
+        <div class="left-panel">
+          <div class="brand">
+            <div class="logo-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="8" fill="url(#paint0_linear_embed)"/>
+                <path d="M16.5 7.5a2.121 2.121 0 0 1 3 3L7 23l-4 1 1-4L16.5 7.5z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                  <linearGradient id="paint0_linear_embed" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#38bdf8"/>
+                    <stop offset="1" stop-color="#818cf8"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <h1>PDF Embedded</h1>
+              <p>Otomatisasi Cap & Tanda Tangan ke Surat Rujuk Balik</p>
+            </div>
+          </div>
+
+          <!-- Step 1: Select Main PDF Document -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">1</span>
+              <h3>Pilih File PDF (Surat Rujuk Balik)</h3>
+            </div>
+            <button type="button" id="btn-embed-select-pdf" class="btn btn-primary btn-full">
+              Pilih File PDF Dokumen
+            </button>
+            <div id="embed-pdf-file-info" class="selected-file-badge" style="display: none; margin-top: 8px; padding: 6px 10px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+              <span id="embed-pdf-name" style="font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px;">-</span>
+              <span id="embed-pdf-pages" style="color: var(--text-muted); font-size: 0.75rem;">-</span>
+            </div>
+          </div>
+
+          <!-- Step 2: Input Keyword Parameter (Regex Auto-Detect) -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">2</span>
+              <h3>Kata Kunci Auto-Detect (Regex)</h3>
+            </div>
+            <div class="form-group" style="margin-bottom: 4px;">
+              <label for="embed-keyword-input" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Kata Kunci / Parameter Regex</label>
+              <input type="text" id="embed-keyword-input" placeholder="Mengetahui" value="Mengetahui" style="padding: 6px 10px; font-size: 0.8rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--border-radius-md); width: 100%; box-sizing: border-box;">
+            </div>
+            <div id="embed-keyword-status" style="font-size: 0.72rem; color: #38bdf8; font-weight: 500; min-height: 18px;">
+              Belum dipindai
+            </div>
+          </div>
+
+          <!-- Step 3: Select Cap & Signature Images -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">3</span>
+              <h3>Pilih Gambar Cap & Tanda Tangan</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div>
+                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Stempel / Cap (cap.png)</label>
+                <button type="button" id="btn-embed-select-cap" class="btn btn-secondary btn-full" style="justify-content: space-between; font-size: 0.8rem; padding: 6px 10px;">
+                  <span id="embed-cap-label" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px;">Pilih File Cap (.png)</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </button>
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Tanda Tangan Dokter (tanda_tangan.png)</label>
+                <button type="button" id="btn-embed-select-sig" class="btn btn-secondary btn-full" style="justify-content: space-between; font-size: 0.8rem; padding: 6px 10px;">
+                  <span id="embed-sig-label" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px;">Pilih Tanda Tangan (.png)</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Positioning & Manual Adjustments -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">4</span>
+              <h3>Atur Posisi & Ukuran</h3>
+            </div>
+            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+              <button type="button" id="btn-preset-mengetahui" class="btn btn-filter active" style="font-size: 0.7rem; padding: 4px 8px; flex: 1;">
+                🎯 Auto Regex
+              </button>
+              <button type="button" id="btn-preset-bawah-kiri" class="btn btn-filter" style="font-size: 0.7rem; padding: 4px 8px; flex: 1;">
+                📍 Manual / Drag
+              </button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="form-group">
+                <label style="font-size: 0.7rem; color: var(--text-muted);">Offset X (+/- Pergeseran pt)</label>
+                <input type="number" id="embed-pos-x" value="0" class="form-control" placeholder="0" style="padding: 4px 8px; font-size: 0.8rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--border-radius-md); width: 100%; box-sizing: border-box;">
+              </div>
+              <div class="form-group">
+                <label style="font-size: 0.7rem; color: var(--text-muted);">Offset Y (+/- Pergeseran pt)</label>
+                <input type="number" id="embed-pos-y" value="0" class="form-control" placeholder="0" style="padding: 4px 8px; font-size: 0.8rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--border-radius-md); width: 100%; box-sizing: border-box;">
+              </div>
+              <div class="form-group">
+                <label style="font-size: 0.7rem; color: var(--text-muted);">Ukuran Cap (W x H)</label>
+                <input type="number" id="embed-cap-size" value="95" class="form-control" style="padding: 4px 8px; font-size: 0.8rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--border-radius-md); width: 100%; box-sizing: border-box;">
+              </div>
+              <div class="form-group">
+                <label style="font-size: 0.7rem; color: var(--text-muted);">Ukuran Td Tangan</label>
+                <input type="number" id="embed-sig-w" value="100" class="form-control" style="padding: 4px 8px; font-size: 0.8rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--border-radius-md); width: 100%; box-sizing: border-box;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Destination Folder & Filename -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">5</span>
+              <h3>Folder Tujuan & Nama File</h3>
+            </div>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label for="embed-out-filename" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Nama File Hasil Output</label>
+              <input type="text" id="embed-out-filename" placeholder="surat_rujuk_balik_embedded" value="surat_rujuk_balik_embedded" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--border-radius-md); width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="form-group">
+              <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Folder Tujuan Output</label>
+              <div class="input-group">
+                <input type="text" id="embed-out-dir" placeholder="Pilih folder tujuan..." readonly>
+                <button type="button" id="btn-embed-browse-dir" class="btn-icon" title="Pilih Folder">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button type="button" id="btn-embed-process" class="btn btn-action btn-disabled" disabled style="margin-top: auto;">
+            Embed Cap & Tanda Tangan ke Semua Halaman
+          </button>
+        </div>
+
+        <!-- Right Panel: Interactive Visual Preview Workspace -->
+        <div class="right-panel">
+          <div class="workspace-header" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3>Visual Live Preview</h3>
+              <span id="embed-page-indicator" style="font-size: 0.8rem; color: var(--text-secondary);">-</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label style="font-size: 0.75rem; color: var(--text-muted);">Preview Page:</label>
+              <select id="embed-preview-page-select" class="form-control" style="font-size: 0.8rem; padding: 2px 8px; width: 100px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+                <option value="1">Page 1</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="organizer-workspace" style="display: flex; justify-content: center; align-items: center; position: relative; overflow: auto; padding: 20px;">
+            <div id="embed-empty-state" class="empty-state" style="display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--text-muted);">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              <p>Pilih file PDF (Surat Rujuk Balik), Cap, dan Tanda Tangan untuk melihat preview visual.</p>
+            </div>
+
+            <!-- Preview Canvas Wrapper with Drag Overlay -->
+            <div id="embed-preview-stage" style="position: relative; display: none; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden; background: #ffffff;">
+              <canvas id="embed-preview-canvas"></canvas>
+              
+              <!-- Draggable Signature Overlay (Underneath Cap) -->
+              <div id="embed-overlay-sig" style="position: absolute; border: 2px dashed #c084fc; background: rgba(192, 132, 252, 0.15); cursor: move; display: none; box-sizing: border-box; z-index: 10;">
+                <img id="embed-sig-img-element" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
+              </div>
+
+              <!-- Draggable Cap Overlay (On top of Signature) -->
+              <div id="embed-overlay-cap" style="position: absolute; border: 2px dashed #60a5fa; background: rgba(96, 165, 250, 0.15); cursor: move; display: none; box-sizing: border-box; z-index: 12;">
+                <img id="embed-cap-img-element" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; opacity: 0.85;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- TAB 4: POSISI BEBAS MULTI GAMBAR -->
+    <div class="tab-content" id="free-embed-tab">
+      <div class="app-container">
+        <!-- Left Panel: Upload Actions & Asset List Controls -->
+        <div class="left-panel" style="overflow-y: auto;">
+          <div class="brand">
+            <div class="logo-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="8" fill="url(#brand-grad-free)" />
+                <path
+                  d="M20 10H12C10.8954 10 10 10.8954 10 12V20C10 21.1046 10.8954 22 12 22H20C21.1046 22 22 21.1046 22 20V12C22 10.8954 21.1046 10 20 10Z"
+                  stroke="white" stroke-width="2" stroke-linecap="round" />
+                <defs>
+                  <linearGradient id="brand-grad-free" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#0284c7" />
+                    <stop offset="1" stop-color="#38bdf8" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <h2>Free Embed Position (Multi Image)</h2>
+              <p>Drag, drop, & atur ukuran gambar secara bebas per halaman</p>
+            </div>
+          </div>
+
+          <!-- Step 1: Target PDF File -->
+          <div class="scan-step-section" style="margin-top: 12px;">
+            <div class="step-header">
+              <span class="step-num">1</span>
+              <h3>Pilih File PDF Utama</h3>
+            </div>
+            <button type="button" id="btn-free-select-pdf" class="btn btn-secondary btn-full">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              Pilih Dokumen PDF Target
+            </button>
+            <div id="free-pdf-file-info"
+              style="display: none; align-items: center; justify-content: space-between; margin-top: 8px; padding: 8px 12px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: var(--border-radius-md);">
+              <span id="free-pdf-name"
+                style="font-weight: 600; font-size: 0.8rem; color: #38bdf8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">-</span>
+              <span id="free-pdf-pages" class="badge" style="background: #0284c7; color: white; font-size: 0.7rem;">0
+                pages</span>
+            </div>
+          </div>
+
+          <!-- Step 2: Upload Multiple Image Assets -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">2</span>
+              <h3>Upload Gambar (Cap / TTD / Stempel)</h3>
+            </div>
+            <button type="button" id="btn-free-add-images" class="btn btn-secondary btn-full"
+              style="justify-content: center; font-size: 0.85rem; padding: 8px 12px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              + Upload File Gambar (.png / .jpg)
+            </button>
+
+            <!-- Uploaded Image Assets Cards -->
+            <div id="free-images-list"
+              style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; max-height: 240px; overflow-y: auto;">
+              <div
+                style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 12px; border: 1px dashed var(--border-color); border-radius: 6px;">
+                Belum ada gambar diupload. Klik tombol di atas untuk menambah gambar.
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Destination Folder & Save -->
+          <div class="scan-step-section">
+            <div class="step-header">
+              <span class="step-num">3</span>
+              <h3>Folder Simpan & Export</h3>
+            </div>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label style="font-size: 0.7rem; color: var(--text-muted);">Folder Tujuan</label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="free-out-dir" readonly placeholder="Pilih folder tujuan..." class="form-control"
+                  style="font-size: 0.75rem; padding: 4px 8px; flex: 1; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+                <button type="button" id="btn-free-browse-dir" class="btn btn-secondary"
+                  style="padding: 4px 8px; font-size: 0.75rem;">Browse</button>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label style="font-size: 0.7rem; color: var(--text-muted);">Nama File Hasil (.pdf)</label>
+              <input type="text" id="free-out-filename" value="dokumen_posisi_bebas_embedded" class="form-control"
+                style="font-size: 0.8rem; padding: 6px 10px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--border-radius-md); width: 100%; box-sizing: border-box;">
+            </div>
+
+            <button type="button" id="btn-free-process" class="btn btn-primary btn-action btn-disabled" disabled
+              style="width: 100%; margin-top: 4px;">
+              Simpan & Export PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Panel: Interactive Stage Workspace -->
+        <div class="right-panel">
+          <div class="workspace-header" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3>Workspace</h3>
+              <span id="free-page-indicator" style="font-size: 0.8rem; color: var(--text-secondary);">-</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <!-- Zoom Controls -->
+              <div class="zoom-controls" style="display: flex; align-items: center; gap: 4px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2px 6px; margin-right: 6px;">
+                <button type="button" id="btn-free-zoom-out" class="btn-icon" style="padding: 2px 6px; font-weight: bold;" title="Zoom Out (-)">-</button>
+                <span id="free-zoom-label" style="font-size: 0.75rem; color: var(--text-main); font-weight: 600; min-width: 40px; text-align: center;">100%</span>
+                <button type="button" id="btn-free-zoom-in" class="btn-icon" style="padding: 2px 6px; font-weight: bold;" title="Zoom In (+)">+</button>
+                <button type="button" id="btn-free-zoom-reset" class="btn-text" style="font-size: 0.7rem; padding: 2px 6px;" title="Reset / Fit Width">Fit</button>
+              </div>
+              <label style="font-size: 0.75rem; color: var(--text-muted);">Lihat Halaman:</label>
+              <select id="free-preview-page-select" class="form-control"
+                style="font-size: 0.8rem; padding: 2px 8px; width: 100px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+                <option value="1">Page 1</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="organizer-workspace"
+            style="display: flex; justify-content: center; align-items: center; position: relative; overflow: auto; padding: 20px;">
+            <div id="free-empty-state" class="empty-state"
+              style="display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--text-muted);">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <path d="M12 8v8M8 12h8"></path>
+              </svg>
+              <p>Pilih file PDF dan Upload Gambar untuk menempatkan tanda tangan / cap secara bebas di lembar preview.
+              </p>
+            </div>
+
+            <!-- Preview Canvas Stage Wrapper -->
+            <div id="free-preview-stage"
+              style="position: relative; display: none; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden; background: #ffffff;">
+              <canvas id="free-preview-canvas"></canvas>
+
+              <!-- Container for dynamically placed image overlays on current preview page -->
+              <div id="free-overlays-container"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+  <script src="tauri-bridge.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

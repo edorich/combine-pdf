@@ -1,0 +1,59 @@
+{
+  "name": "combine-pdf",
+  "version": "1.0.2",
+  "description": "Combine multiple PDF files into one using JavaScript and Electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "tauri": "npx @tauri-apps/cli",
+    "tauri:dev": "npx @tauri-apps/cli dev",
+    "tauri:build": "npx @tauri-apps/cli build",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.medika.combinepdf",
+    "productName": "PDF Combiner Pro",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "tauri-bridge.js",
+      "index.html",
+      "styles.css",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    }
+  },
+  "keywords": [
+    "pdf",
+    "combine",
+    "merge",
+    "electron",
+    "tauri"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "electron": "^31.0.0",
+    "electron-builder": "^26.15.3"
+  }
+}
